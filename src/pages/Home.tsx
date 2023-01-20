@@ -1,19 +1,38 @@
+import { Pagination } from '@mui/material'
 import React, { ChangeEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAsyncFn } from 'react-use'
 import { getData } from '../api/getData'
+import { ErrorMessage } from '../components/ErrorMessage'
+import { Table } from '../components/Table'
+import { TableHeader } from '../components/TableHeader'
+import { TableRow } from '../components/TableRow'
+import {RequestValidator} from '../components/RequestValidator'
 
 
 export const Home = () => {
     const perPageLimit : number = 5
     const apiURL = 'https://reqres.in/api/products'
     
-    interface ApiRequest {
-        url: string
-        perPage: number
-        page?: number
-        filter?: number
+    interface ApiItemResult {        
+        id: string
+        name: string
+        year: number
+        color: string
+        pantone_value: string
     }
+    
+    const [state, doFetch] = useAsyncFn((req :RequestValidator) =>getData(req))
+    const [search, setSearch] = useSearchParams()
 
+    React.useEffect(() => {
+        if (typeof(search.get('search')) === 'string'){
+            doFetch({url: apiURL, perPage: perPageLimit, filter: search.get('search')})
+        }
+        else {doFetch({url: apiURL, perPage: perPageLimit})}
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [doFetch])
+      
     const [inputVal, setInputVal] = React.useState('')
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!isNaN(Number(e.target.value))) {
@@ -22,21 +41,19 @@ export const Home = () => {
     }
     function handleFormSubmit (e: React.SyntheticEvent) {
         e.preventDefault()
-        console.log(inputVal)
-        // setSearch({ ...search, search: inputVal })
-    }
-    const [state, doFetch] = useAsyncFn((call :ApiRequest) =>getData(call))
-    function renderTable(){
-        console.log(state)
-        return (
-            <div>123</div>
-        )
-    }
+        setSearch({ ...search, search: inputVal })
+        if (inputVal===''){ 
+            doFetch({url: apiURL, perPage: perPageLimit})
+        }
+        else {
+            doFetch({url: apiURL, perPage: perPageLimit, filter: inputVal})
+        }
+    }    
+        const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+            setSearch({ ...search, page: `${value}` })
+            doFetch({url: apiURL, perPage: perPageLimit, page: value})
 
-    
-    React.useEffect(() => {
-        doFetch({url: apiURL, perPage: perPageLimit})
-      }, [doFetch])
+      }
     return (
         <div
             className={'background'}
@@ -93,14 +110,61 @@ export const Home = () => {
                     state.error ?
                         <>
                             <h2 className={'error--message'}>Error: {state.error.message}</h2>
-                            <h4 className={'error--message'}>Sorry, we are unable to access the database. Please refresh or try again later</h4>
+                            <ErrorMessage status={state.error.message} />
                         </>
                     : 
                         !state.value ?
                             <div>No data...</div>
                             :
-                            typeof(state)!=='object'? null : renderTable()
-                            }
+                            typeof(state)!=='object'? 
+                                null 
+                                : 
+                                <>
+                                    <div className={'content__table--container'}>
+                                        <Table cn={'content__table'}>
+                                            <TableHeader
+                                            cn={'content__table--head'}
+                                            elementsCn={'content__table--th'}
+                                            elements={['ID:', 'NAME:', 'YEAR:']}
+                                            />
+                                            <tbody>
+                                            {!state.value.data ?
+                                                <tr><td></td><td>No data</td></tr>
+                                                :
+                                                Array.isArray(state.value.data) ?
+                                                state.value.data.map(
+                                                    (item:ApiItemResult) => {
+                                                        return (
+                                                            <TableRow
+                                                            key={item.id}
+                                                            item={item}
+                                                            cn={'content__table--td'}
+                                                            />
+                                                            )
+                                                        })
+                                                        :
+                                                        typeof(state.value.data)==='object'?
+                                                        <TableRow
+                                                        key={state.value.data.id}
+                                                                item={state.value.data}
+                                                                cn={'content__table--td'}
+                                                            />
+                                                            :
+                                                            <tr><td></td><td>Something went wrong...</td></tr>
+                                                        }
+                                            </tbody>
+                                        </Table>
+                                    </div>
+                                    <div className={'content__nav--container'}>
+                                        <Pagination 
+                                            color={'primary'}
+                                            count={state.value.total_pages | 1}
+                                            page={(typeof(search.get('page')) === 'string') ? Number(search.get('page')) : 1}
+                                            onChange={handlePageChange}
+                                        />
+                                    </div>
+                                </>
+                    }
             </div>
     </div>
   )

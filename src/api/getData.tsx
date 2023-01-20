@@ -1,11 +1,6 @@
-interface ApiRequest {
-    url: string
-    perPage: number
-    page?: number
-    filter?: number
-}
+import { RequestValidator } from "../components/RequestValidator"
 
-export const getData = (request : ApiRequest) => {
+export const getData = (request : RequestValidator) => {
     const {url, perPage} = request
     function setPage(){
         if (request.page){
@@ -17,19 +12,19 @@ export const getData = (request : ApiRequest) => {
     }
     function setFilter(){
         if (request.filter){
-            const filter = request.filter
+            const filter = Number(request.filter)
             return filter}
         const filter=''
         return filter
     }
     function setApiUrl (url: string, perPage: number, page:number, filter?:number | string){
         if (typeof(filter) === 'number'){
-            const requestUrl = `${url}/${filter}`
-            console.log(requestUrl)
-            return requestUrl
+            if (!isNaN(filter)){
+              const requestUrl = `${url}/${filter}`
+              return requestUrl
+            }
         }
         const requestUrl = `${url}?per_page=${perPage}&page=${page}`
-        console.log(requestUrl)
         return requestUrl
     }
 
@@ -38,7 +33,7 @@ export const getData = (request : ApiRequest) => {
         if (resp.ok) {
           return resp.json()
         }
-        throw new Error('Network Error!')
+        throw new Error(`${resp.status}`)
       })
       .catch(error => {
         throw (error)
