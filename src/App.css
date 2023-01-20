@@ -1,0 +1,145 @@
+html, body {
+  padding: 0px;
+  margin: 0px;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  overflow: hidden;
+  background: rgb(213, 220, 255);
+  background: linear-gradient(180deg, rgba(213, 220, 255, 1) 1%, rgba(255, 255, 255, 1) 98%);
+}
+
+.background {
+  margin: 0 auto 0 auto;
+  min-height: 100vh;
+  min-width: 600px;
+  width: 70%;
+}
+
+.header {
+  text-align: center;
+}
+
+.header__title {
+  padding-top: 40px;
+  margin: 0px;
+  font-size: 4rem;
+  color: #3498db;
+  font-weight: 900;
+  font-style: Monospace;
+  font-variant-caps: all-small-caps;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+}
+
+.header__title--modified {
+  color: red;
+}
+
+.header__sub-title {
+  padding: 0px;
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-style: Monospace;
+  font-variant-caps: all-small-caps;
+  font-size: 1.5rem;
+  padding-bottom: 30px;
+}
+
+.header__sub-title--modified {
+  color: green;
+}
+
+.search-tools__container {
+  text-align: center;
+}
+
+.search-tools__input {
+  width: 50%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 0.5px solid #3498db;
+  font-size: 1rem;
+}
+
+.search-tools__button {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #3498db;
+  border: 0.5px solid #3498db;
+  color: white;
+  font-size: 1rem;
+}
+
+.search-tools__button:hover {
+  background-color: #2d86c2;
+  border: 0.5px solid #2d86c2;
+
+}
+
+.content__container {
+  text-align: center;
+}
+
+.error--message {
+  color: red;
+}
+
+.content__table--container {
+  min-height: 250px;
+}
+
+.content__table {
+  margin: 40px auto 5px auto;
+  width: 80%;
+  border: none;
+  border-spacing: 0;
+  font-size: 1rem;
+}
+
+.content__table--head {
+  background-color: lightgrey;
+  font-weight: 700;
+}
+
+.content__table--td {
+  padding: 7px 0;
+  cursor: pointer;
+}
+
+.content__table--th {
+  padding: 10px 0;
+}
+
+.content__nav--container {
+  padding-top: 50px;
+  margin: 0 auto 0 auto;
+  display: flex;
+  width: 80%;
+  justify-content: space-around;
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 12px;
+  }
+
+  .background {
+    width: 80%;
+    min-width: 300px;
+
+  }
+
+  .header__title {
+    font-size: 3rem;
+  }
+
+  .header__sub-title {
+    font-size: 1.25rem;
+  }
+}
