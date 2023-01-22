@@ -24,7 +24,10 @@ export const ErrorMessage: React.FC<Props> = ({
         }
     }
     return (
-        <h4 className={'error--message'}>{statusMessage()}</h4>
+        <>
+            <h2 className={'error--message'}>Error: {status}</h2>
+            <h4 className={'error--message'}>{statusMessage()}</h4>
+        </>
     )
   }
 

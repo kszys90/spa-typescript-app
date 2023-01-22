@@ -11,9 +11,9 @@ import {RequestValidator} from '../components/RequestValidator'
 
 
 export const Home = () => {
+    // API Requests config
     const perPageLimit : number = 5
     const apiURL = 'https://reqres.in/api/products'
-    
     interface ApiItemResult {        
         id: string
         name: string
@@ -21,18 +21,38 @@ export const Home = () => {
         color: string
         pantone_value: string
     }
-    
+
+    // Initial API request (with fliter and page cases)
     const [state, doFetch] = useAsyncFn((req :RequestValidator) =>getData(req))
     const [search, setSearch] = useSearchParams()
-
     React.useEffect(() => {
         if (typeof(search.get('search')) === 'string'){
-            doFetch({url: apiURL, perPage: perPageLimit, filter: search.get('search')})
+            const filterValue = search.get('search') 
+            if (search.get('page') && typeof(search.get('page')) === 'string'){
+                let pageNo = search.get('page') 
+                    doFetch({url: apiURL, perPage: perPageLimit, page: Number(setSearchValue(pageNo)), filter: setSearchValue(filterValue)})
+                    return
+            }
+            doFetch({url: apiURL, perPage: perPageLimit, filter: setSearchValue(filterValue)})
+            return
+        }
+        if (search.get('page') && typeof(search.get('page')) === 'string'){
+            let pageNo = search.get('page') 
+                doFetch({url: apiURL, perPage: perPageLimit, page: Number(setSearchValue(pageNo))})
+                return
         }
         else {doFetch({url: apiURL, perPage: perPageLimit})}
       // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [doFetch])
       
+      function setSearchValue(element: string | null) {
+        if (typeof element === "string") {
+          return element
+        }
+        return ''
+      }
+      
+    //   Form and input handling
     const [inputVal, setInputVal] = React.useState('')
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!isNaN(Number(e.target.value))) {
@@ -48,12 +68,15 @@ export const Home = () => {
         else {
             doFetch({url: apiURL, perPage: perPageLimit, filter: inputVal})
         }
-    }    
-        const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-            setSearch({ ...search, page: `${value}` })
-            doFetch({url: apiURL, perPage: perPageLimit, page: value})
+    }   
 
-      }
+    // Pagination return
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setSearch({ ...search, page: `${value}` })
+        doFetch({url: apiURL, perPage: perPageLimit, page: value})
+    }
+
+    // App render
     return (
         <div
             className={'background'}
@@ -108,10 +131,7 @@ export const Home = () => {
                  <div>Loading...</div> 
                  :
                     state.error ?
-                        <>
-                            <h2 className={'error--message'}>Error: {state.error.message}</h2>
-                            <ErrorMessage status={state.error.message} />
-                        </>
+                        <ErrorMessage status={state.error.message} />
                     : 
                         !state.value ?
                             <div>No data...</div>

@@ -20,13 +20,19 @@ export const TableRow:React.FC<Props> = ({cn,item}) => {
     const handleOpen = () => setOpen(true)
     const handleClose = () => setOpen(false)
     const [isHover, setHovered] = React.useState(false)
+    
+    const mediaMatch = window.matchMedia('(max-width: 600px)')
+    const [matches, setMatches] = React.useState(mediaMatch.matches)
+    mediaMatch.onchange = (e) => {
+      setMatches(e.matches)
+    }
   
     const modalStyle = {
       position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: '50%',
+      width: matches ? '65%' : '50%',
       bgcolor: item.color,
       border: '2px solid #000',
       boxShadow: 24,

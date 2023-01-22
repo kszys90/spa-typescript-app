@@ -12,17 +12,21 @@ export const getData = (request : RequestValidator) => {
     }
     function setFilter(){
         if (request.filter){
-            const filter = Number(request.filter)
-            return filter}
+            const filter = request.filter
+            return filter
+          }
         const filter=''
         return filter
     }
-    function setApiUrl (url: string, perPage: number, page:number, filter?:number | string){
-        if (typeof(filter) === 'number'){
-            if (!isNaN(filter)){
+    function setApiUrl (url: string, perPage: number, page:number, filter:number | string){
+        if (filter && filter !== ''){
+              if (request.page){
+                // API doesn't return value for this request
+                const requestUrl = `${url}/${filter}&per_page=${perPage}&page=${page}`
+                return requestUrl
+              }
               const requestUrl = `${url}/${filter}`
               return requestUrl
-            }
         }
         const requestUrl = `${url}?per_page=${perPage}&page=${page}`
         return requestUrl
